@@ -1,0 +1,6 @@
+Router1         ansible_user=cisco ansible_password=cisco123! ansible_host=192.168.56.117
+Router2         ansible_user=cisco ansible_password=cisco123! ansible_host=192.168.56.118
+
+[routers]
+Router1
+Router2

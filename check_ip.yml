@@ -1,0 +1,19 @@
+---
+  - name: check ip address
+    hosts: routers
+    gather_facts: false
+    connection: local
+    vars:
+      cli:
+        username: cisco
+        password: cisco123!
+
+    tasks:
+      - name: print ip interfaces
+        ios_command:
+          provider: "{{ cli }}"
+          commands:
+            - show ip interface brief
+        register: show_int
+      - debug:
+          var: show_int

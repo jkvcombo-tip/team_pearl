@@ -1,0 +1,48 @@
+---
+  - name: Configure NTP on Router
+    hosts: routers
+    gather_facts: false
+    connection: local
+
+    vars:
+      cli:
+        username: cisco
+        password: cisco123!
+
+    tasks:
+      - name: Configure Router1 as NTP server
+        when: ansible_host=="192.168.56.117"
+        ios_config:
+          provider: "{{ cli }}"
+          lines:
+            - ntp master 1
+            - ntp server 192.168.56.118
+            - ntp master 2
+            - ntp server 192.168.56.118
+
+      - name: Configure Router2 as NTP server
+        when: ansible_host=="192.168.56.118"
+        ios_config:
+          provider: "{{ cli }}"
+          lines:
+            - ntp server 192.168.56.117
+            - ntp master 2
+            - ntp server 192.168.56.117
+            - ntp master 1
+
+      - name: Show NTP status on Router1
+        ios_command:
+          commands:
+            - show ntp status
+        register: config
+
+      - name: Show NTP status on Router2
+        ios_command:
+          commands:
+            - show ntp status
+        register: config
+
+      - name: SAVE OUTPUT ./iosconfig/
+        copy:
+          content: "{{ config.stdout[0] }}"
+          dest: "iosconfig/NTP_output{{ inventory_hostname }}.txt"

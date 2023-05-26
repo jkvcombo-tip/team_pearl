@@ -1,0 +1,22 @@
+---
+  - name: Automatic backup of router running-config
+    hosts: routers
+    gather_facts: false
+    connection: local
+
+    vars:
+      cli:
+        username: cisco
+        password: cisco123!
+
+    tasks:
+      - name: Display the running-config
+        ios_command:
+          commands:
+            - show running-config
+          provider: "{{ cli }}"
+        register: config
+      - name: SAVE OUTPUT ./backups/
+        copy:
+          content: "{{ config.stdout[0] }}"
+          dest: "backups/SHOW_run{{ inventory_hostname }}.txt"
